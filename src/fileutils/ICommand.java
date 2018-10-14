@@ -6,11 +6,13 @@ package fileutils;
 /**
  *
  */
-public interface ICommand {
+public interface ICommand extends ICommonCodes {
   
   /**
-   *  
-   * @return
+   * Executes a command
+   * 
+   * @param args flags and parameters
+   * @return a status code 
    */
   int execute(String ...args);
 }

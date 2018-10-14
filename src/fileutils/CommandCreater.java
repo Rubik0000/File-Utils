@@ -21,16 +21,16 @@ public class CommandCreater implements ICommandCreater {
   public ICommand createCommand(String name) {
     switch (name.toLowerCase()) {
       case "ls":
-        return new ListFiles(_parser);
+        return new ListFiles(_parser, "ls");
      
       case "mkdir":
-        return new MakeDir(_parser);
+        return new MakeDir(_parser, "mkdir");
         
       case "echo":
-        return new CreateFile(_parser);
+        return new CreateFile(_parser, "echo");
         
       case "cat":
-        return new ShowFiles(_parser);
+        return new ShowFilesContent(_parser, "cat");
         
       default:
         return null;

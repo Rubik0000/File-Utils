@@ -1,43 +1,74 @@
-/**
- * 
- */
+
 package fileutils;
 
 import java.io.File;
 
 /**
- *
+ * Provides a command that creates a directory
  */
-public class MakeDir extends AbstractCommand {
+public class MakeDir extends AbstractCommand implements IFileCodes {
 
+  /** Max number of flags */
+  static private final int MAX_COUNT_FLAGS = 1;
+  
+  /** Max number of command parameters */
   static private final int MAX_COUNT_PARAM = 1;
   
   /**
    * @param flagParser
    */
-  public MakeDir(IFlagParser flagParser) {
-    super(flagParser);
-    // TODO Auto-generated constructor stub
+  public MakeDir(IFlagParser flagParser, String name) {
+    super(flagParser, name);
+  }
+  
+  /**
+   * Creates new directory
+   * 
+   * @param dir
+   * @return
+   */
+  private int makeDir(String dir) {
+    var newDir = new File(dir);
+    if (newDir.exists()) {
+      System.err.println("The directory is already exist");
+      return DIR_EXISTS;
+    }
+    newDir.mkdir();
+    return SUCCESS_CODE;
   }
 
-  /* (non-Javadoc)
-   * @see fileutils.ICommand#execute(java.lang.String[])
-   */
+  @Override
+  protected boolean hasFlag(String flag) {
+    return flag.equals(HELP);
+  }
+
+  @Override
+  protected void getHelp() {
+    System.out.println("Creates directory");
+    System.out.println(getName() + " [OPTIONS] DIRNAME");
+  }
+  
   @Override
   public int execute(String... args) {
-    if (args.length != MAX_COUNT_PARAM) {
-      System.err.println("Invalid arguments");
-      return 1;
+    // getting the flags
+    var recvFlags = getFlagParser().getFlags(args, MAX_COUNT_FLAGS);
+    int code = super.execute(recvFlags);
+    if (code == FLAG_ERR) {
+      return FLAG_ERR;
     }
-    var curDir = new File(".");
-    for (var dir : curDir.listFiles()) {
-      if (dir.getName().equals(args[0])) {
-        System.err.println("The directory is already exist");
-        return 2;
-      }
+    if (code == HELP_SHOWED) {
+      return SUCCESS_CODE;
     }
-    new File(args[0]).mkdir();
-    return 0;
+    
+    if (args.length == 0 || args.length > MAX_COUNT_FLAGS + MAX_COUNT_PARAM ||
+        getFlagParser().isFlag(args[args.length - 1])) {
+      
+      System.err.println("Invalid parameters");
+      System.err.println("Try "+  getFlagParser().getFullFlag(HELP)
+          + " for more info");
+      return PARAM_ERR;  
+    }
+    return makeDir(args[args.length - 1]);
   }
 
 }
